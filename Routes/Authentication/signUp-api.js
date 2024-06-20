@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {userSchema} = require('../../Validations/validation');
-const {checkUserExists, createNewUser} = require('../../RoutesManagement/Authentication_Management/authentication-management');
+const {checkUserExists, createNewUser, generateEmailVerificationDetails} = require('../../RoutesManagement/Authentication_Management/authentication-management');
 
 //Register a User
 router.post("/register", async(req, res) => {
@@ -16,7 +16,9 @@ router.post("/register", async(req, res) => {
            let user = await checkUserExists(req.body.userName);
            if(!user) {
                 let object = await createNewUser(req.body);
+                let verifyResultToken = await generateEmailVerificationDetails(object.data);
                 result.data = object.data;
+                result.emailVerificationToken = verifyResultToken;
                 res.status(200).json(result);
            }
            else {

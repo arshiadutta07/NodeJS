@@ -2,12 +2,14 @@ const sequelize = require('../DB/database-connection');
 const User = require('./user');
 const Project = require('./project');
 const AuditLog = require('./auditLog');
+const EmailVerificationInfo = require('./emailVerificationDetails');
 
 // Initialize models
 const models = {
   User,
   Project,
-  AuditLog
+  AuditLog,
+  EmailVerificationInfo
 };
 
 // Define associations

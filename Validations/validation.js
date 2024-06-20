@@ -23,9 +23,15 @@ const blogDetails = Joi.object({
 
 const userIdentity = Joi.string().required();
 
+const emailVerifySchema = Joi.object({
+  email: Joi.string().email().required(),
+  token: Joi.string().required()
+});
+
 module.exports = {
   userSchema,
   userCredentials,
   blogDetails,
-  userIdentity
+  userIdentity,
+  emailVerifySchema
 };

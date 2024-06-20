@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 let userModel = require("../../Models/user");
+let emailVerificationModel = require('../../Models/emailVerificationDetails');
+const randomToken = require('random-token');
 require('dotenv').config();
 
 //SignUp Management Functions
@@ -78,7 +80,7 @@ let generateToken = function(user) {
     }
 }
 
-//Generate Token 
+//Register OAuth User
 let registerOauthUser = function(oauthUser) {
     return new Promise(async function(resolve, reject) {
         try {
@@ -97,7 +99,65 @@ let registerOauthUser = function(oauthUser) {
             resolve();
         }
         catch(ex) {
-            throw new Error("Error in Generating User");
+            reject(ex);
+        }
+    })
+}
+
+// Generate Verification Token
+let generateEmailVerificationDetails = function(obj) {
+    return new Promise(async function(resolve, reject) {
+        try {
+            let randomEmailToken = randomToken(16);
+            let details = {
+                user_id : obj.id,
+                email : obj.email,
+                token : randomEmailToken
+            }
+            await emailVerificationModel.create(details);
+            resolve(randomEmailToken);
+        }
+        catch(ex) {
+            reject(ex);
+        }
+    })
+}
+
+let checkUserExistsByEmail = function(email) {
+    return new Promise(async function(resolve, reject) {
+        try {
+            let res = await userModel.findOne({where: { email }});
+            if(res) {
+                resolve(res);
+            }
+            else {
+                resolve(res);
+            }
+        }
+        catch(ex) {
+            reject(ex);
+        }
+    })
+}
+
+let verifyEmail = function(object) {
+    return new Promise(async function(resolve, reject) {
+        try {
+            let result = {};
+            let res = await emailVerificationModel.findOne({where: { email: object.email }});
+            if(res.token == object.token) {
+                res.update({verificationStatus: true, where:{email: object.email}});
+                result.message = "Email Verified Successfully";
+                result.isSuccess = true;
+                resolve(result);
+            } else {
+                result.message = "Invalid Token";
+                result.isSuccess = false;
+                resolve(result);
+            }
+        }
+        catch(ex) {
+            reject(ex);
         }
     })
 }
@@ -107,5 +167,8 @@ module.exports = {
     createNewUser,
     checkUserPassword,
     generateToken,
-    registerOauthUser
+    registerOauthUser,
+    generateEmailVerificationDetails,
+    checkUserExistsByEmail,
+    verifyEmail
 }
