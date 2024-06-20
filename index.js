@@ -6,12 +6,13 @@ const googleAuth = require("./Routes/Authentication/googleAuthentication");
 const session = require("express-session");
 const { sequelize } = require('./Models/modelCollectionConfig');
 const passport = require("passport");
+require('dotenv').config();
 
 
 app.use(session({
   resave : false,
   saveUninitialized : true,
-  secret : "abcd"
+  secret : process.env.SESSION_SECRET
 }))
 
 app.use(passport.initialize());
