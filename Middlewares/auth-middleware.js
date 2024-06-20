@@ -12,6 +12,7 @@ let auth = function(req, res, next) {
                     result.error = `Unauthorized User - ${err.message}. Please login again!`;
                     res.status(401).send(result);
                 } else {
+                    req.scope = { role: decoded.role };
                     next();
                 }
             });  
@@ -27,4 +28,19 @@ let auth = function(req, res, next) {
     }
 }
 
-module.exports = auth;
+let authorizeRoles = function(allowedRoles) {
+    return (req, res, next) => {
+        const userRole = req.scope ? req.scope.role : null; 
+  
+      if (allowedRoles.includes(userRole)) {
+        return next();
+      }
+  
+      res.status(403).json({ message: 'Unauthorized access' });
+    };
+  }
+
+module.exports = {
+    auth,
+    authorizeRoles
+}
