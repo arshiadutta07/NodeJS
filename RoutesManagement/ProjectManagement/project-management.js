@@ -68,7 +68,7 @@ let validateClient = function(id) {
     })
 }
 
-let createPtroject = function(obj) {
+let createProject = function(obj) {
     return new Promise(async function(resolve, reject) {
         try {
             let result = {};
@@ -82,11 +82,73 @@ let createPtroject = function(obj) {
     })
 }
 
+let updateProject = function(obj, id) {
+  return new Promise(async function(resolve, reject) {
+      try {
+          let result = {};
+          await projectModel.update(obj, {where: {id} });
+          result.data = "User Updated Successfully";
+          resolve(result);
+      }
+      catch(ex) {
+          reject(ex);
+      }
+  })
+}
+
+let getAllProjects = function(pageNo) {
+  return new Promise(async function(resolve, reject) {
+      try {
+          let limit = 5;
+          let result = {};
+          let res = await projectModel.findAll({
+              attributes : ["id", "name", "description", "status"],
+              limit : limit,
+              offset : (pageNo - 1) * limit,
+              include  : [
+                { model: userModel, attributes: ["displayName", "userName", "role"], as : "projectManager"},
+                { model: userModel, attributes: ["displayName", "userName", "role"], as : "client"}
+              ]
+            });
+          result.data = res;
+          resolve({success: true, data : result});
+      }
+      catch(ex) {
+          reject(ex);
+      }
+  })
+}
+
+let getParticularProject = function(id) {
+  return new Promise(async function(resolve, reject) {
+      try {
+          let limit = 5;
+          let result = {};
+          let res = await projectModel.findOne({
+              attributes : ["id", "name", "description", "status"],
+              include  : [
+                { model: userModel, attributes: ["displayName", "userName", "role"], as : "projectManager"},
+                { model: userModel, attributes: ["displayName", "userName", "role"], as : "client"}
+              ],
+              where : {id}
+            });
+          result.data = res;
+          resolve({success: true, data : result});
+      }
+      catch(ex) {
+          reject(ex);
+      }
+  })
+}
+
 
 
 module.exports = {
     getAllUsers,
     validateProjectManager,
     validateClient,
-    createPtroject
+    createProject,
+    updateProject,
+    getAllProjects,
+    getParticularProject
 }

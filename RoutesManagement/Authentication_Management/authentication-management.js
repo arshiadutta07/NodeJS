@@ -67,6 +67,7 @@ let checkUserPassword = function(userPass, hashPass) {
 let generateToken = function(user) {
     try {
         let secretKey = process.env.JWT_SECRET_KEY;
+        console.log(process.env.JWT_SECRET_KEY);
         let userInfo = {
             id : user.id,
             username : user.userName,

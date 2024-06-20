@@ -5,8 +5,10 @@ let auth = function(req, res, next) {
     let result = {};
     try {
         let secretKey = process.env.JWT_SECRET_KEY;
+        console.log(secretKey)
         if(req.headers["cookie"]) {
             let token = req.headers["cookie"].split('=')[1];
+            token = token.split(';')[0];
             jwt.verify(token, secretKey, function(err, decoded) {
                 if (err) {
                     result.error = `Unauthorized User - ${err.message}. Please login again!`;
@@ -36,7 +38,7 @@ let authorizeRoles = function(allowedRoles) {
         return next();
       }
   
-      res.status(403).json({ message: 'Unauthorized access' });
+      res.status(403).json({ message: "You Don't have permission to access this resource" });
     };
   }
 
